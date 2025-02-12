@@ -1,8 +1,14 @@
 namespace SmartEnum;
 
-internal enum CreditCard
+public class CreditCard : Enumeration<CreditCard>
 {
-    Standard = 1,
-    Premium = 2,
-    Platinum = 3,
+    public static readonly CreditCard Standard = new(1, "Standard");
+    public static readonly CreditCard Premium = new(2, "Premium");
+    public static readonly CreditCard Platinum = new(3, "Platinum");
+
+    private CreditCard(int value, string name) : base(value, name)
+    {
+    }
+
+    public double Discount => 0.0;
 }
