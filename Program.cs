@@ -1,7 +1,7 @@
 ﻿
 using SmartEnum;
 
-var creditCard = CreditCard.Platinum;
+var creditCard = CreditCard.FromValue(1);
 
 
 Console.WriteLine($"Credit card: {creditCard}, discount: {creditCard.Discount:P}");

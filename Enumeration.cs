@@ -1,8 +1,12 @@
+using System.Reflection;
+
 namespace SmartEnum;
 
 public abstract class Enumeration<TEnum> : IEquatable<Enumeration<TEnum>>
     where TEnum : Enumeration<TEnum>
 {
+    public static readonly Dictionary<int, TEnum> Enumarations = CreateEnumerations();
+
     protected Enumeration(int value, string name)
     {
         Value = value;
@@ -15,12 +19,14 @@ public abstract class Enumeration<TEnum> : IEquatable<Enumeration<TEnum>>
 
     public static TEnum? FromValue(int value)
     {
-        return default;
+        return Enumarations.TryGetValue(value, out TEnum? enumartion)
+            ? enumartion
+            : default;
     }
 
     public static TEnum? FromName(string name)
     {
-        return default;
+        return Enumarations.Values.SingleOrDefault(e => e.Name == name);
     }
 
     public bool Equals(Enumeration<TEnum>? other)
@@ -44,5 +50,17 @@ public abstract class Enumeration<TEnum> : IEquatable<Enumeration<TEnum>>
     public override string ToString()
     {
         return Name;
+    }
+
+    private static Dictionary<int, TEnum> CreateEnumerations()
+    {
+        var enumrationType = typeof(TEnum);
+
+        var fieldsForType = enumrationType
+            .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+            .Where(fieldInfo => enumrationType.IsAssignableFrom(fieldInfo.FieldType))
+            .Select(fieldInfo => (TEnum)fieldInfo.GetValue(default)!);
+
+        return fieldsForType.ToDictionary(x => x.Value);
     }
 }   
